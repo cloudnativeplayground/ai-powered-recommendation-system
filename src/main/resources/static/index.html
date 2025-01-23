@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Behavior and Recommendations</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+        .loading {
+            color: #999;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<h1>User Behavior and Recommendations</h1>
+
+<div class="section" id="user-behavior-section">
+    <h2>User Behavior</h2>
+    <p class="loading" id="user-behavior-loading">Loading user behavior...</p>
+    <table id="user-behavior-table" style="display: none;">
+        <thead>
+        <tr>
+            <th>User ID</th>
+            <th>Page Viewed</th>
+            <th>Time Spent (seconds)</th>
+            <th>Timestamp</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<div class="section" id="recommendations-section">
+    <h2>Recommendations</h2>
+    <p class="loading" id="recommendations-loading">Loading recommendations...</p>
+    <table id="recommendations-table" style="display: none;">
+        <thead>
+        <tr>
+            <th>User ID</th>
+            <th>Recommendation</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+    // Fetch user behavior data
+    fetch('/api/user-behavior')
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to load user behavior data.');
+            return response.json();
+        })
+        .then(data => {
+            const table = document.getElementById('user-behavior-table');
+            const tbody = table.querySelector('tbody');
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.userId}</td>
+                    <td>${item.pageViewed}</td>
+                    <td>${item.timeSpentSeconds}</td>
+                    <td>${new Date(item.timestamp).toLocaleString()}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            document.getElementById('user-behavior-loading').style.display = 'none';
+            table.style.display = 'table';
+        })
+        .catch(error => {
+            document.getElementById('user-behavior-loading').textContent = error.message;
+        });
+
+    // Fetch recommendations data
+    fetch('/api/recommendations')
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to load recommendations.');
+            return response.json();
+        })
+        .then(data => {
+            const table = document.getElementById('recommendations-table');
+            const tbody = table.querySelector('tbody');
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.userId}</td>
+                    <td>${item.recommendation}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            document.getElementById('recommendations-loading').style.display = 'none';
+            table.style.display = 'table';
+        })
+        .catch(error => {
+            document.getElementById('recommendations-loading').textContent = error.message;
+        });
+</script>
+</body>
+</html>
